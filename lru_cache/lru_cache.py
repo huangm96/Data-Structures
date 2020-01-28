@@ -1,3 +1,9 @@
+
+import sys
+sys.path.append('../doubly_linked_list')
+from doubly_linked_list import DoublyLinkedList
+
+
 class LRUCache:
     """
     Our LRUCache class keeps track of the max number of nodes it
@@ -7,8 +13,10 @@ class LRUCache:
     to every node stored in the cache.
     """
     def __init__(self, limit=10):
-        pass
-
+        self.size = 0
+        self.storage = {}
+        self.dll = DoublyLinkedList()
+        self.limit = limit
     """
     Retrieves the value associated with the given key. Also
     needs to move the key-value pair to the end of the order
@@ -17,7 +25,24 @@ class LRUCache:
     key-value pair doesn't exist in the cache.
     """
     def get(self, key):
-        pass
+        if not key in self.storage:
+            return None
+        else:
+            value = self.storage[key]
+            self.storage.pop(key)
+            self.storage[key] = value
+            current_node = self.dll.head
+            current_key = ""
+            while current_node:
+                    for x, y in current_node.value.items():
+                        current_key = x
+                    if current_key == key:
+                        self.dll.delete(current_node)
+                        break
+                    else:
+                        current_node = current_node.next
+            self.dll.add_to_tail({key:value})
+            return value
 
     """
     Adds the given key-value pair to the cache. The newly-
@@ -30,4 +55,33 @@ class LRUCache:
     the newly-specified value.
     """
     def set(self, key, value):
-        pass
+        if self.size < self.limit:
+            self.dll.add_to_tail({key:value})
+            self.storage[key] = value
+            self.size += 1
+            
+        else:
+            if key in self.storage:
+
+                self.storage[key] = value
+                current_node = self.dll.head
+                current_key = ""
+                while current_node:
+                    for x, y in current_node.value.items():
+                        current_key = x
+                    if current_key == key:
+                        current_node.value[key] = value
+                        break
+                    else:
+                        current_node = current_node.next
+            else:
+
+                oldest_key = ""
+                for k in self.dll.head.value.keys():
+                    oldest_key = k
+  
+                self.storage.pop(oldest_key)
+                self.dll.remove_from_head()
+                self.dll.add_to_tail({key: value})
+
+                self.storage[key] = value
