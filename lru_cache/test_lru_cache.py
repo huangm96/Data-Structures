@@ -11,6 +11,7 @@ class CacheTests(unittest.TestCase):
         self.cache.set('item2', 'b')
         self.cache.set('item3', 'c')
         self.cache.set('item2', 'z')
+        print(self.cache.dll)
         self.assertEqual(self.cache.get('item1'), 'a')
         self.assertEqual(self.cache.get('item2'), 'z')
 

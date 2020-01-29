@@ -34,13 +34,13 @@ class LRUCache:
             current_node = self.dll.head
             current_key = ""
             while current_node:
-                    for x, y in current_node.value.items():
-                        current_key = x
-                    if current_key == key:
-                        self.dll.delete(current_node)
-                        break
-                    else:
-                        current_node = current_node.next
+                for x, y in current_node.value.items():
+                    current_key = x
+                if current_key == key:
+                    self.dll.delete(current_node)
+                    break
+                else:
+                    current_node = current_node.next
             self.dll.add_to_tail({key:value})
             return value
 
