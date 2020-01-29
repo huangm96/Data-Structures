@@ -28,21 +28,9 @@ class LRUCache:
         if not key in self.storage:
             return None
         else:
-            value = self.storage[key]
-            self.storage.pop(key)
-            self.storage[key] = value
-            current_node = self.dll.head
-            current_key = ""
-            while current_node:
-                for x, y in current_node.value.items():
-                    current_key = x
-                if current_key == key:
-                    self.dll.delete(current_node)
-                    break
-                else:
-                    current_node = current_node.next
-            self.dll.add_to_tail({key:value})
-            return value
+            node = self.storage[key]
+            self.dll.move_to_end(node)
+            return node.value[1]
 
     """
     Adds the given key-value pair to the cache. The newly-
@@ -55,33 +43,20 @@ class LRUCache:
     the newly-specified value.
     """
     def set(self, key, value):
-        if self.size < self.limit:
-            self.dll.add_to_tail({key:value})
-            self.storage[key] = value
-            self.size += 1
+        
+        if key in self.storage:
+
+            node = self.storage[key] 
+            node.value = (key,value)
+            self.dll.move_to_end(node)
+            return
+
+        if self.size == self.limit:
+            self.storage.pop(self.dll.head.value[0])
+            self.dll.remove_from_head()
+            self.size -=1
+
             
-        else:
-            if key in self.storage:
-
-                self.storage[key] = value
-                current_node = self.dll.head
-                current_key = ""
-                while current_node:
-                    for x, y in current_node.value.items():
-                        current_key = x
-                    if current_key == key:
-                        current_node.value[key] = value
-                        break
-                    else:
-                        current_node = current_node.next
-            else:
-
-                oldest_key = ""
-                for k in self.dll.head.value.keys():
-                    oldest_key = k
-  
-                self.storage.pop(oldest_key)
-                self.dll.remove_from_head()
-                self.dll.add_to_tail({key: value})
-
-                self.storage[key] = value
+        self.dll.add_to_tail((key,value))
+        self.storage[key] = self.dll.tail
+        self.size += 1
